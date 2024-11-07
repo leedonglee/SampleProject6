@@ -9,16 +9,6 @@ public class CustomScrollView : MonoBehaviour
         None, Left, Right
     }
 
-    public struct StageNumber
-    {
-        
-    }
-
-    public abstract class ICustomScrollView : MonoBehaviour
-    {
-        // void 
-    }
-
     [Header("Grids")]
     [SerializeField]
     private RectTransform _rectTransform;
@@ -43,8 +33,29 @@ public class CustomScrollView : MonoBehaviour
         _isMobile = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
         _eventDistanceX = Screen.width * 0.05f; // 20분의 1
 
-        _currPage = 0;
-        _lastPage = 3;
+        int currStage = 1;
+        int lastStage = 45;
+
+        for (int i = 15, page = 1; i < lastStage; i += 15, page++)
+        {
+            if (currStage <= i)
+            {
+                _currPage = page;
+                break;
+            }
+        }
+
+        _lastPage = lastStage / 15;
+
+        if (lastStage % 15 != 0)
+        {
+            _lastPage += 1;
+        }
+
+        _prevGrid.Init(null);
+        _currGrid.Init(null);
+        _nextGrid.Init(null);
+
         UpdateGrid();
     }
 
@@ -60,7 +71,7 @@ public class CustomScrollView : MonoBehaviour
             {
                 float distanceX = _movedPositionX -_beganPositionX;
 
-                if ((_beganPositionX < _movedPositionX && _currPage == 0) || (_beganPositionX > _movedPositionX && _currPage == _lastPage))
+                if ((_beganPositionX < _movedPositionX && _currPage == 1) || (_beganPositionX > _movedPositionX && _currPage == _lastPage))
                 {
                     distanceX = 0f;
                     _beganPositionX = _movedPositionX;
@@ -155,7 +166,7 @@ public class CustomScrollView : MonoBehaviour
 
     void UpdateGrid()
     {
-        if (_currPage == 0)
+        if (_currPage == 1)
         {
             _prevGrid.gameObject.SetActive(false);
         }
@@ -165,7 +176,7 @@ public class CustomScrollView : MonoBehaviour
             _nextGrid.gameObject.SetActive(false);
         }
         
-        if (!_prevGrid.gameObject.activeSelf && _currPage > 0)
+        if (!_prevGrid.gameObject.activeSelf && _currPage > 1)
         {
             _prevGrid.gameObject.SetActive(true);
         }
@@ -173,6 +184,18 @@ public class CustomScrollView : MonoBehaviour
         if (!_nextGrid.gameObject.activeSelf &&_currPage < _lastPage)
         {
             _nextGrid.gameObject.SetActive(true);
+        }
+
+        _currGrid.SetGrid((_currPage - 1) * 15 + 1, _currPage * 15, 100);
+
+        if (_prevGrid.gameObject.activeSelf)
+        {
+            _prevGrid.SetGrid((_currPage - 2) * 15 + 1, (_currPage - 1) * 15, 100);
+        }
+
+        if (_nextGrid.gameObject.activeSelf)
+        {
+            _nextGrid.SetGrid(_currPage * 15 + 1, (_currPage + 1) * 15, 100);
         }
     }
 

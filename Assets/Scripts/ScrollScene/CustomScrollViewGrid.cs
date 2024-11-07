@@ -38,12 +38,27 @@ public class CustomScrollViewGrid : MonoBehaviour
 
             GridButton gridButton = new GridButton(button, tmpText);
 
-            gridButton.button.onClick.AddListener(() =>
+            button.onClick.AddListener(() =>
             {
                 buttonCallback?.Invoke(gridButton.number);
             });
 
             _gridButtonList.Add(gridButton);
+        }
+    }
+
+    public void SetGrid(int startNumber, int endNumber, int currentNumber)
+    {
+        int number = startNumber;
+
+        for (int i = 0; i < _gridButtonList.Count; i++)
+        {
+            _gridButtonList[i].SetNumber(number);
+
+            if (number < endNumber)
+            {
+                number++;
+            }
         }
     }
 
